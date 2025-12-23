@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreadSync Pro - Scalable Thread Management Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #3b82f6;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --code-bg: #0a0a0a;
+            --gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.2);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #334155;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .logo-text span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 180px 0 120px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+        }
+
+        .hero-content {
+            flex: 1;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #cbd5e1;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .thread-visualization {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Features Section */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-subtitle {
+            display: inline-block;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .section-description {
+            font-size: 18px;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 32px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--secondary);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: var(--secondary);
+            font-size: 28px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .feature-description {
+            color: var(--gray);
+        }
+
+        /* Code Section */
+        .code-section {
+            background: var(--dark);
+            color: white;
+        }
+
+        .code-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .code-language {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .code-content {
+            padding: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .code-keyword {
+            color: #ff79c6;
+        }
+
+        .code-function {
+            color: #50fa7b;
+        }
+
+        .code-string {
+            color: #f1fa8c;
+        }
+
+        .code-comment {
+            color: #6272a4;
+        }
+
+        .code-type {
+            color: #8be9fd;
+        }
+
+        .code-number {
+            color: #bd93f9;
+        }
+
+        /* Performance Section */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .performance-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .performance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .performance-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .performance-label {
+            font-size: 18px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Comparison Section */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 24px 20px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .checkmark {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .xmark {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Getting Started */
+        .steps-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .step-number {
+            min-width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .step-content h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            nav {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 23, 42, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 30px;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .performance-value {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .delay-2 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .delay-3 {
+            animation-delay: 0.6s;
+            opacity: 0;
+        }
+
+        /* Thread animation in hero */
+        .thread {
+            position: absolute;
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, var(--secondary), transparent);
+            border-radius: 2px;
+            opacity: 0.7;
+        }
+
+        .thread::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -3px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        .thread::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -3px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="logo-text">Thread<span>Sync</span> Pro</div>
+            </a>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav id="mainNav">
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#code">Code</a></li>
+                    <li><a href="#performance">Performance</a></li>
+                    <li><a href="#comparison">Comparison</a></li>
+                    <li><a href="#getting-started">Get Started</a></li>
+                </ul>
+
+                <div class="nav-buttons">
+                    <a href="#download" class="btn btn-primary">Download</a>
+                    <a href="#github" class="btn btn-secondary">GitHub</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-bolt"></i>
+                    <span>VERSION 2.1.0 RELEASED</span>
+                </div>
+
+                <h1 class="hero-title">Scalable Thread Management Library</h1>
+
+                <p class="hero-subtitle">
+                    Efficient creation, synchronization, and termination of threads for high-performance computing.
+                    Designed to handle thousands of threads concurrently with minimal overhead.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#download" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download Now
+                    </a>
+                    <a href="#documentation" class="btn btn-secondary">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                    <a href="#examples" class="btn btn-secondary">
+                        <i class="fas fa-code"></i> Examples
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="thread-visualization" id="threadViz">
+                    <!-- Threads will be generated with JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-subtitle">Core Features</div>
+                <h2 class="section-title">Built for High-Performance Computing</h2>
+                <p class="section-description">
+                    ThreadSync Pro provides a comprehensive set of tools for scalable thread management in demanding
+                    applications.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="feature-title">Massive Scalability</h3>
+                    <p class="feature-description">
+                        Handle 10,000+ concurrent threads with efficient memory management and optimized context
+                        switching algorithms.
+                    </p>
+                </div>
+
+                <div class="feature-card fade-in delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Optimized Performance</h3>
+                    <p class="feature-description">
+                        Advanced lock-free data structures and work-stealing schedulers ensure maximum throughput for
+                        compute-intensive tasks.
+                    </p>
+                </div>
+
+                <div class="feature-card fade-in delay-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">Advanced Synchronization</h3>
+                    <p class="feature-description">
+                        Comprehensive primitives including barriers, semaphores, read-write locks, and condition
+                        variables with deadlock detection.
+                    </p>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Real-time Monitoring</h3>
+                    <p class="feature-description">
+                        Monitor thread activity, resource utilization, and performance metrics with comprehensive
+                        dashboards and alerts.
+                    </p>
+                </div>
+
+                <div class="feature-card fade-in delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Deadlock Prevention</h3>
+                    <p class="feature-description">
+                        Built-in deadlock detection and prevention mechanisms with detailed diagnostic reporting for
+                        easier debugging.
+                    </p>
+                </div>
+
+                <div class="feature-card fade-in delay-3">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3 class="feature-title">Cross-Platform</h3>
+                    <p class="feature-description">
+                        Consistent API across Windows, Linux, and macOS with architecture-specific optimizations for
+                        each platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section id="code" class="section code-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-subtitle" style="color: #60a5fa;">Code Examples</div>
+                <h2 class="section-title" style="color: white;">Simple, Intuitive API</h2>
+                <p class="section-description" style="color: #cbd5e1;">
+                    Clean, expressive API for thread management that makes concurrent programming accessible.
+                </p>
+            </div>
+
+            <div class="code-container">
+                <div class="code-block fade-in delay-1">
+                    <div class="code-header">
+                        <div class="code-title">thread_pool_example.cpp</div>
+                        <div class="code-language">C++</div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code><span class="code-keyword">#include</span> <span class="code-string">&lt;threadsync.h&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span>
+<span class="code-keyword">#include</span> <span class="code-string">&lt;vector&gt;</span>
+
+<span class="code-keyword">int</span> <span class="code-function">main</span>() {
+    <span class="code-comment">// Create thread pool with 8 worker threads</span>
+    threadsync::<span class="code-type">ThreadPool</span> pool(8);
+    
+    <span class="code-comment">// Vector to store results</span>
+    std::vector&lt;std::future&lt;<span class="code-keyword">int</span>&gt;&gt; results;
+    
+    <span class="code-comment">// Submit 100 tasks to the thread pool</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i &lt; <span class="code-number">100</span>; ++i) {
+        results.emplace_back(pool.<span class="code-function">submit</span>([i] {
+            <span class="code-comment">// Simulate computation</span>
+            std::this_thread::<span class="code-function">sleep_for</span>(std::chrono::milliseconds(<span class="code-number">10</span>));
+            <span class="code-keyword">return</span> i * i;
+        }));
+    }
+    
+    <span class="code-comment">// Collect results</span>
+    <span class="code-keyword">int</span> total = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-keyword">auto</span>&amp; result : results) {
+        total += result.<span class="code-function">get</span>();
+    }
+    
+    std::cout &lt;&lt; <span class="code-string">"Total: "</span> &lt;&lt; total &lt;&lt; std::endl;
+    <span class="code-keyword">return</span> <span class="code-number">0</span>;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="code-block fade-in delay-2">
+                    <div class="code-header">
+                        <div class="code-title">synchronization_example.cpp</div>
+                        <div class="code-language">C++</div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code><span class="code-keyword">#include</span> <span class="code-string">&lt;threadsync.h&gt;</span>
+
+<span class="code-comment">// Parallel matrix multiplication using barriers</span>
+<span class="code-type">Matrix</span> <span class="code-function">parallel_multiply</span>(<span class="code-keyword">const</span> <span class="code-type">Matrix</span>&amp; A, <span class="code-keyword">const</span> <span class="code-type">Matrix</span>&amp; B) {
+    <span class="code-keyword">int</span> n = A.<span class="code-function">rows</span>();
+    <span class="code-type">Matrix</span> <span class="code-function">result</span>(n, n);
+    
+    <span class="code-comment">// Create barrier for synchronization</span>
+    threadsync::<span class="code-type">Barrier</span> <span class="code-function">barrier</span>(<span class="code-number">4</span>);
+    
+    <span class="code-comment">// Divide work among 4 threads</span>
+    threadsync::<span class="code-type">ThreadPool</span> pool(<span class="code-number">4</span>);
+    
+    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> t = <span class="code-number">0</span>; t &lt; <span class="code-number">4</span>; ++t) {
+        pool.<span class="code-function">submit</span>([&amp;, t] {
+            <span class="code-keyword">int</span> start = t * n / <span class="code-number">4</span>;
+            <span class="code-keyword">int</span> end = (t + <span class="code-number">1</span>) * n / <span class="code-number">4</span>;
+            
+            <span class="code-comment">// Phase 1: Compute partial results</span>
+            <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = start; i &lt; end; ++i) {
+                <span class="code-keyword">for</span> (<span class="code-keyword">int</span> j = <span class="code-number">0</span>; j &lt; n; ++j) {
+                    result(i, j) = <span class="code-number">0</span>;
+                    <span class="code-keyword">for</span> (<span class="code-keyword">int</span> k = <span class="code-number">0</span>; k &lt; n; ++k) {
+                        result(i, j) += A(i, k) * B(k, j);
+                    }
+                }
+            }
+            
+            <span class="code-comment">// Synchronize before next phase</span>
+            barrier.<span class="code-function">wait</span>();
+            
+            <span class="code-comment">// Phase 2: Additional processing...</span>
+            <span class="code-comment">// ...</span>
+        });
+    }
+    
+    pool.<span class="code-function">wait_for_completion</span>();
+    <span class="code-keyword">return</span> result;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Section -->
+    <section id="performance" class="section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-subtitle">Performance Metrics</div>
+                <h2 class="section-title">Engineered for Speed</h2>
+                <p class="section-description">
+                    ThreadSync Pro delivers exceptional performance in high-concurrency scenarios.
+                </p>
+            </div>
+
+            <div class="performance-grid">
+                <div class="performance-card fade-in delay-1">
+                    <div class="performance-value" id="metric1">10,000+</div>
+                    <div class="performance-label">Concurrent Threads</div>
+                </div>
+
+                <div class="performance-card fade-in delay-2">
+                    <div class="performance-value" id="metric2">&lt;5μs</div>
+                    <div class="performance-label">Thread Creation Time</div>
+                </div>
+
+                <div class="performance-card fade-in delay-3">
+                    <div class="performance-value" id="metric3">4KB</div>
+                    <div class="performance-label">Memory Per Thread</div>
+                </div>
+
+                <div class="performance-card fade-in delay-1">
+                    <div class="performance-value" id="metric4">0.1ms</div>
+                    <div class="performance-label">Context Switch Overhead</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section id="comparison" class="section" style="background: #f8fafc;">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-subtitle">Benchmark Comparison</div>
+                <h2 class="section-title">Outperforms the Competition</h2>
+                <p class="section-description">
+                    ThreadSync Pro consistently outperforms standard threading libraries.
+                </p>
+            </div>
+
+            <div class="fade-in delay-1">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>ThreadSync Pro</th>
+                            <th>Standard Library</th>
+                            <th>Boost.Thread</th>
+                            <th>OpenMP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Max Threads</td>
+                            <td class="checkmark">10,000+</td>
+                            <td class="xmark">~1,000</td>
+                            <td class="xmark">~2,000</td>
+                            <td class="xmark">CPU Cores</td>
+                        </tr>
+                        <tr>
+                            <td>Thread Creation Time</td>
+                            <td class="checkmark">&lt;5μs</td>
+                            <td class="xmark">~50μs</td>
+                            <td class="xmark">~45μs</td>
+                            <td class="xmark">N/A</td>
+                        </tr>
+                        <tr>
+                            <td>Memory per Thread</td>
+                            <td class="checkmark">4KB</td>
+                            <td class="xmark">64KB</td>
+                            <td class="xmark">64KB</td>
+                            <td class="xmark">N/A</td>
+                        </tr>
+                        <tr>
+                            <td>Deadlock Detection</td>
+                            <td class="checkmark">Yes</td>
+                            <td class="xmark">No</td>
+                            <td class="xmark">No</td>
+                            <td class="xmark">No</td>
+                        </tr>
+                        <tr>
+                            <td>Work Stealing</td>
+                            <td class="checkmark">Yes</td>
+                            <td class="xmark">No</td>
+                            <td class="xmark">No</td>
+                            <td class="checkmark">Limited</td>
+                        </tr>
+                        <tr>
+                            <td>Cross-Platform</td>
+                            <td class="checkmark">Yes</td>
+                            <td class="checkmark">Yes</td>
+                            <td class="checkmark">Yes</td>
+                            <td class="checkmark">Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-subtitle">Getting Started</div>
+                <h2 class="section-title">Integrate in Minutes</h2>
+                <p class="section-description">
+                    Follow these simple steps to integrate ThreadSync Pro into your project.
+                </p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step fade-in delay-1">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Download and Install</h3>
+                        <p>Get the latest version for your platform or build from source. Package managers available for
+                            all major platforms.</p>
+                    </div>
+                </div>
+
+                <div class="step fade-in delay-2">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Include Headers</h3>
+                        <p>Add the ThreadSync Pro include directory to your project and include the main header:
+                            <code>#include &lt;threadsync.h&gt;</code></p>
+                    </div>
+                </div>
+
+                <div class="step fade-in delay-3">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Link Library</h3>
+                        <p>Link against the ThreadSync Pro static or dynamic library in your build system (CMake, Make,
+                            Visual Studio, etc.).</p>
+                    </div>
+                </div>
+
+                <div class="step fade-in delay-1">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Create Thread Pool</h3>
+                        <p>Instantiate a ThreadPool object with your desired number of worker threads and start
+                            submitting tasks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 60px;">
+                <a href="#download" class="btn btn-primary" style="padding: 16px 40px; font-size: 18px;">
+                    <i class="fas fa-download"></i> Download ThreadSync Pro
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <a href="#" class="logo" style="margin-bottom: 24px; display: inline-block;">
+                        <div class="logo-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="logo-text">Thread<span>Sync</span> Pro</div>
+                    </a>
+                    <p style="color: #cbd5e1; margin-bottom: 24px;">
+                        High-performance thread management library for modern computing applications.
+                    </p>
+                    <div style="display: flex; gap: 16px;">
+                        <a href="#" class="btn btn-secondary" style="padding: 10px;">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="btn btn-secondary" style="padding: 10px;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-secondary" style="padding: 10px;">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#code">Examples</a></li>
+                        <li><a href="#performance">Performance</a></li>
+                        <li><a href="#comparison">Comparison</a></li>
+                        <li><a href="#getting-started">Get Started</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Documentation</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Best Practices</a></li>
+                        <li><a href="#">Migration Guide</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Community</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Stack Overflow</a></li>
+                        <li><a href="#">Contributing</a></li>
+                        <li><a href="#">Code of Conduct</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2023 ThreadSync Pro. Released under the MIT License. Designed for high-performance computing.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function () {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function () {
+                document.getElementById('mainNav').classList.remove('active');
+            });
+        });
+
+        // Create thread visualization in hero
+        function createThreadVisualization() {
+            const container = document.getElementById('threadViz');
+            const threadCount = 30;
+
+            for (let i = 0; i < threadCount; i++) {
+                const thread = document.createElement('div');
+                thread.className = 'thread';
+
+                // Random position
+                const left = Math.random() * 100;
+                const height = 100 + Math.random() * 200;
+                const top = Math.random() * 100;
+
+                thread.style.left = `${left}%`;
+                thread.style.height = `${height}px`;
+                thread.style.top = `${top}%`;
+
+                // Random animation
+                const duration = 2 + Math.random() * 3;
+                const delay = Math.random() * 5;
+
+                thread.style.animation = `pulse ${duration}s ease-in-out ${delay}s infinite`;
+
+                // Create keyframes for pulsing animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { opacity: 0.2; transform: translateY(0); }
+                        50% { opacity: 1; transform: translateY(20px); }
+                        100% { opacity: 0.2; transform: translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+
+                container.appendChild(thread);
+            }
+        }
+
+        // Animate counters
+        function animateCounter(element, target, suffix = '') {
+            const duration = 2000;
+            const steps = 60;
+            const stepValue = target / steps;
+            let current = 0;
+            let step = 0;
+
+            const timer = setInterval(() => {
+                current += stepValue;
+                step++;
+
+                if (step >= steps) {
+                    current = target;
+                    clearInterval(timer);
+                }
+
+                if (suffix === '+') {
+                    element.textContent = Math.round(current).toLocaleString() + suffix;
+                } else if (suffix === 'μs') {
+                    element.textContent = '<' + current.toFixed(1) + suffix;
+                } else if (suffix === 'ms') {
+                    element.textContent = current.toFixed(1) + suffix;
+                } else if (suffix === 'KB') {
+                    element.textContent = Math.round(current) + suffix;
+                }
+            }, duration / steps);
+        }
+
+        // Animate metrics when in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate counters
+                    animateCounter(document.getElementById('metric1'), 10000, '+');
+                    animateCounter(document.getElementById('metric2'), 5, 'μs');
+                    animateCounter(document.getElementById('metric3'), 4, 'KB');
+                    animateCounter(document.getElementById('metric4'), 0.1, 'ms');
+
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        // Observe performance section
+        const performanceSection = document.getElementById('performance');
+        if (performanceSection) {
+            observer.observe(performanceSection);
+        }
+
+        // Add fade-in animation on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    fadeObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => {
+            fadeObserver.observe(el);
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            createThreadVisualization();
+
+            // Add smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+
+                    if (href === '#') return;
+
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+
+                    if (target) {
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
