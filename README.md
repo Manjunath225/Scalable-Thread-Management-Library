@@ -1,0 +1,1 @@
+A scalable thread management library focused on efficient thread creation, synchronization, scheduling, and termination. Designed to handle thousands of concurrent threads with low overhead, following core operating system concurrency principles for high-performance computing and academic use.
